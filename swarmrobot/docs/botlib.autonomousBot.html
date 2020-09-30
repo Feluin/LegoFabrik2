@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module botlib.autonomousBot</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="botlib.html"><font color="#ffffff">botlib</font></a>.autonomousBot</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/pi/Documents/T2_3100-Source-Code/botlib/autonomousBot.py">/home/pi/Documents/T2_3100-Source-Code/botlib/autonomousBot.py</a></font></td></tr></table>
+    <p></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="logging.html">logging</a><br>
+</td><td width="25%" valign=top><a href="numpy.html">numpy</a><br>
+</td><td width="25%" valign=top><a href="threading.html">threading</a><br>
+</td><td width="25%" valign=top><a href="time.html">time</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="botlib.bot.html#Bot">botlib.bot.Bot</a>(<a href="builtins.html#object">builtins.object</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="botlib.autonomousBot.html#AutonomousBot">AutonomousBot</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="AutonomousBot">class <strong>AutonomousBot</strong></a>(<a href="botlib.bot.html#Bot">botlib.bot.Bot</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Control&nbsp;instance&nbsp;for&nbsp;a&nbsp;autonomous&nbsp;bot.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="botlib.autonomousBot.html#AutonomousBot">AutonomousBot</a></dd>
+<dd><a href="botlib.bot.html#Bot">botlib.bot.Bot</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="AutonomousBot-__enter__"><strong>__enter__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="AutonomousBot-__exit__"><strong>__exit__</strong></a>(self, exc_type, exc_value, traceback)</dt></dl>
+
+<dl><dt><a name="AutonomousBot-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="AutonomousBot-restart_detection_thread"><strong>restart_detection_thread</strong></a>(self, function)</dt><dd><tt>Join&nbsp;old&nbsp;thread,&nbsp;create&nbsp;and&nbsp;start&nbsp;a&nbsp;new&nbsp;thread&nbsp;for&nbsp;detecting&nbsp;functions.<br>
+&nbsp;<br>
+:param&nbsp;function:&nbsp;Function&nbsp;for&nbsp;the&nbsp;new&nbsp;thread&nbsp;to&nbsp;execute.</tt></dd></dl>
+
+<dl><dt><a name="AutonomousBot-start"><strong>start</strong></a>(self)</dt><dd><tt>Start&nbsp;all&nbsp;detecting&nbsp;functions&nbsp;in&nbsp;different&nbsp;threads.</tt></dd></dl>
+
+<dl><dt><a name="AutonomousBot-start_detection_thread"><strong>start_detection_thread</strong></a>(self, function, is_daemon=True)</dt><dd><tt>Create&nbsp;and&nbsp;start&nbsp;a&nbsp;thread&nbsp;for&nbsp;detecting&nbsp;functions.<br>
+&nbsp;<br>
+:param&nbsp;function:&nbsp;Function&nbsp;for&nbsp;the&nbsp;new&nbsp;thread&nbsp;to&nbsp;execute.</tt></dd></dl>
+
+<dl><dt><a name="AutonomousBot-start_image_capture"><strong>start_image_capture</strong></a>(self)</dt><dd><tt>Capture&nbsp;an&nbsp;image&nbsp;and&nbsp;saves&nbsp;it&nbsp;in&nbsp;the&nbsp;class&nbsp;attribute&nbsp;[_current_image].</tt></dd></dl>
+
+<dl><dt><a name="AutonomousBot-start_line_detection"><strong>start_line_detection</strong></a>(self)</dt><dd><tt>Detect&nbsp;line&nbsp;in&nbsp;image&nbsp;from&nbsp;class&nbsp;attribute&nbsp;[_current_image].</tt></dd></dl>
+
+<dl><dt><a name="AutonomousBot-start_parking_slot_detection"><strong>start_parking_slot_detection</strong></a>(self)</dt><dd><tt>Detect&nbsp;parking&nbsp;slot&nbsp;in&nbsp;image&nbsp;from&nbsp;class&nbsp;attribute&nbsp;[_current_image].</tt></dd></dl>
+
+<dl><dt><a name="AutonomousBot-start_sonar_detection"><strong>start_sonar_detection</strong></a>(self)</dt><dd><tt>Get&nbsp;actual&nbsp;sonar&nbsp;data&nbsp;and&nbsp;calculates&nbsp;the&nbsp;median&nbsp;from&nbsp;the&nbsp;last&nbsp;five&nbsp;measurements&nbsp;to&nbsp;flatten&nbsp;peaks&nbsp;/&nbsp;wrong&nbsp;measurements.</tt></dd></dl>
+
+<dl><dt><a name="AutonomousBot-start_stop_sign_detection"><strong>start_stop_sign_detection</strong></a>(self)</dt><dd><tt>Detect&nbsp;stop&nbsp;sign&nbsp;in&nbsp;image&nbsp;from&nbsp;class&nbsp;attribute&nbsp;[_current_image].</tt></dd></dl>
+
+<dl><dt><a name="AutonomousBot-start_storage_container_detection"><strong>start_storage_container_detection</strong></a>(self)</dt><dd><tt>Detect&nbsp;storage&nbsp;container&nbsp;in&nbsp;image&nbsp;from&nbsp;class&nbsp;attribute&nbsp;[_current_image].</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="botlib.bot.html#Bot">botlib.bot.Bot</a>:<br>
+<dl><dt><a name="AutonomousBot-calibrate"><strong>calibrate</strong></a>(self)</dt><dd><tt>Find&nbsp;minimum&nbsp;and&nbsp;maximum&nbsp;position&nbsp;for&nbsp;motors.</tt></dd></dl>
+
+<dl><dt><a name="AutonomousBot-detect_object"><strong>detect_object</strong></a>(self, cascade:str)</dt><dd><tt>Detect&nbsp;Objects</tt></dd></dl>
+
+<dl><dt><a name="AutonomousBot-drive_power"><strong>drive_power</strong></a>(self, pnew)</dt><dd><tt>Set&nbsp;the&nbsp;driving&nbsp;power<br>
+&nbsp;<br>
+:param&nbsp;pnew:&nbsp;a&nbsp;value&nbsp;between&nbsp;-100&nbsp;and&nbsp;100.</tt></dd></dl>
+
+<dl><dt><a name="AutonomousBot-drive_steer"><strong>drive_steer</strong></a>(self, pnew)</dt><dd><tt>Set&nbsp;the&nbsp;steering&nbsp;position.<br>
+&nbsp;<br>
+:param&nbsp;pnew:&nbsp;a&nbsp;value&nbsp;between&nbsp;-1.0&nbsp;and&nbsp;1.0.</tt></dd></dl>
+
+<dl><dt><a name="AutonomousBot-get_cap"><strong>get_cap</strong></a>(self) -&gt; cv2.VideoCapture</dt></dl>
+
+<dl><dt><a name="AutonomousBot-name"><strong>name</strong></a>(self)</dt><dd><tt>Returns&nbsp;the&nbsp;bot&nbsp;hostname.</tt></dd></dl>
+
+<dl><dt><a name="AutonomousBot-setup_broker"><strong>setup_broker</strong></a>(self, subscriptions=None)</dt></dl>
+
+<dl><dt><a name="AutonomousBot-setup_cap"><strong>setup_cap</strong></a>(self)</dt><dd><tt>Initialize&nbsp;a&nbsp;`Cap`&nbsp;object.</tt></dd></dl>
+
+<dl><dt><a name="AutonomousBot-sonar"><strong>sonar</strong></a>(self)</dt><dd><tt>Initialize&nbsp;a&nbsp;`Sonar`&nbsp;object.<br>
+&nbsp;<br>
+:return:&nbsp;A&nbsp;`Sonar`&nbsp;instance.</tt></dd></dl>
+
+<dl><dt><a name="AutonomousBot-stop_all"><strong>stop_all</strong></a>(self)</dt><dd><tt>Stop&nbsp;driving&nbsp;and&nbsp;steering&nbsp;motor&nbsp;as&nbsp;well&nbsp;as&nbsp;`Forklift`.</tt></dd></dl>
+
+<dl><dt><a name="AutonomousBot-stop_and_init_all"><strong>stop_and_init_all</strong></a>(self)</dt><dd><tt>Stop&nbsp;driving&nbsp;and&nbsp;steering&nbsp;motor&nbsp;as&nbsp;well&nbsp;as&nbsp;`Forklift`&nbsp;and&nbsp;set&nbsp;them&nbsp;to&nbsp;init&nbsp;position.</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="botlib.bot.html#Bot">botlib.bot.Bot</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table></td></tr></table>
+</body></html>
