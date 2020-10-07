@@ -1,0 +1,13 @@
+setuptools~=50.3.0
+paho-mqtt~=1.5.1
+opencv-python~=4.4.0.42
+numpy~=1.18.5
+spidev~=3.3
+brickpi3~=0.0.0
+picamera~=1.13
+future~=0.16.0
+Pillow~=4.0.0
+imutils~=0.5.3
+readchar~=2.0.1
+pigpio~=1.38
+pygame~=1.9.3

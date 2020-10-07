@@ -1,3 +1,5 @@
+import time
+
 from .motor import CalibratedMotor
 
 
@@ -28,7 +30,7 @@ class Forklift:
         """
         Find minimum and maximum position for motors.
         """
-        self._rotate_motor._pmin = self._rotate_motor._pinit = -128
+        self._rotate_motor._pmin = self._rotate_motor._pinit = -3000
         self._rotate_motor._pmax = 15603
         self._rotate_motor.to_init_position()
 
@@ -47,7 +49,7 @@ class Forklift:
         """
         # rotate backwards
         self._rotate_motor.change_position(self._rotate_motor._pmax)
-
+        time.sleep(1)
         # move fork up
         self._height_motor.to_init_position()
 

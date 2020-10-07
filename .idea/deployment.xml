@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" autoUpload="Always" serverName="sp13" autoUploadExternalChanges="true">
+    <serverData>
+      <paths name="robotarm">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/pi/robotarm_factory" local="$PROJECT_DIR$/robotarm" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="sorting machine">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/pi/sorting_machine_fabric" local="$PROJECT_DIR$/sorting machine" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="sp13">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/swarmrobot_fabric" local="$PROJECT_DIR$/swarmrobot" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
+  </component>
+</project>

@@ -9,3 +9,4 @@ class StorageContainerPosition(Enum):
     Ground = -1.0
     WhiteBox = -0.5
     HorizontalWarehouse = 0.8
+    VerticalWarehouse = -1.0

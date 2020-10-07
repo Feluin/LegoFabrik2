@@ -1,6 +1,6 @@
 import ctypes
+import pigpio
 from typing import Any, List, Union
-
 
 class Sonic (object):
     def __init__(self):

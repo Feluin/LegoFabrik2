@@ -16,7 +16,6 @@ class Bot:
         self._forklift = Forklift(self)
         self._sonar = None
         self.setup_cap()
-
         with open('/etc/hostname', 'r') as hostname:
             self._name = hostname.read().strip()
 
