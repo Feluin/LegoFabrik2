@@ -86,6 +86,7 @@ class CalibratedMotor(Motor):
         super().__init__(port)
 
         # power with which the motor will be calibrated
+        self.currentpos=None
         self._calpow = calpow
         # minimum position
         self._pmin = pmin
@@ -144,6 +145,7 @@ class CalibratedMotor(Motor):
 
         :param pnew: If minimum and maximum are known, this value must be between both.
         """
+        self.currentpos=pnew
         if (self._pmin and self._pmax) and not (self._pmin <= pnew <= self._pmax):
             raise Exception('position ({} < {} < {}) is invalid for motor {}'.format(
                 self._pmin, pnew, self._pmax, self._port))

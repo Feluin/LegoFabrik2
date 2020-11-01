@@ -3,10 +3,9 @@ from typing import Any, List, Union
 
 import numpy as np
 
-
 class Sonar(object):
     LEFT = 6
-    LEFT45 = None
+    LEFT45 = 3
     LEFT_FRONT = 4
     RIGHT_FRONT = 5
     RIGHT45 = 0

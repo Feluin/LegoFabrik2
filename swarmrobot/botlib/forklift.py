@@ -14,7 +14,7 @@ class Forklift:
         self._rotate_motor = CalibratedMotor(
             CalibratedMotor._bp.PORT_B, calpow=70)
         self._height_motor = CalibratedMotor(
-            CalibratedMotor._bp.PORT_A, calpow=50)
+            CalibratedMotor._bp.PORT_A, calpow=60)
 
     def __del__(self):
         self._height_motor.to_init_position()
@@ -30,8 +30,8 @@ class Forklift:
         """
         Find minimum and maximum position for motors.
         """
-        self._rotate_motor._pmin = self._rotate_motor._pinit = -3000
-        self._rotate_motor._pmax = 15603
+        self._rotate_motor._pmin = self._rotate_motor._pinit = -300
+        self._rotate_motor._pmax = 10603
         self._rotate_motor.to_init_position()
 
         self._height_motor.calibrate()
@@ -51,7 +51,8 @@ class Forklift:
         self._rotate_motor.change_position(self._rotate_motor._pmax)
         time.sleep(1)
         # move fork up
-        self._height_motor.to_init_position()
+        self._height_motor.change_position(self._height_motor.position_from_factor(-0.6))
+        time.sleep(3)
 
     def to_pickup_mode(self):
         """
@@ -69,6 +70,6 @@ class Forklift:
         self._rotate_motor.to_init_position()
         # move fork on the right height
         height = ((height / 13.5) * 2) - 1
-        #height = height / (maxHeight/2)-1
+        # height = height / (maxHeight/2)-1
         pos = self._height_motor.position_from_factor(height)
         self._height_motor.change_position(pos)

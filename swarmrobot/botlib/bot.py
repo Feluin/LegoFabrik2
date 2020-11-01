@@ -1,3 +1,5 @@
+import time
+
 import cv2
 
 from .forklift import Forklift
@@ -11,6 +13,7 @@ class Bot:
 
     def __init__(self):
         self._drive_motor = Motor(Motor._bp.PORT_C)
+
         self._steer_motor = CalibratedMotor(Motor._bp.PORT_D, calpow=30)
         self._cap = None
         self._forklift = Forklift(self)
@@ -101,3 +104,16 @@ class Bot:
         self.stop_all()
         self._steer_motor.to_init_position()
         self._forklift.init_all()
+
+    # -1 =left 1= right
+    def steer(self, posfactor):
+        diff = self._steer_motor.currentpos - posfactor
+        if (diff > 0):
+            self._steer_motor.change_position(
+                self._steer_motor.position_from_factor(posfactor - 0.1))
+        elif diff < 0:
+            self._steer_motor.change_position(
+                self._steer_motor.position_from_factor(posfactor + 0.1))
+        time.sleep(1)
+        self._steer_motor.change_position(
+            self._steer_motor.position_from_factor(posfactor))

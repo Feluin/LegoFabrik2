@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="sp13" autoUploadExternalChanges="true">
+  <component name="PublishConfigData" autoUpload="Always" serverName="SR13" autoUploadExternalChanges="true">
     <serverData>
+      <paths name="SR07">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/pi/swarmrobot_fabric" local="$PROJECT_DIR$/swarmrobot" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="SR13">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/swarmrobot_fabric" local="$PROJECT_DIR$/swarmrobot" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="robotarm">
         <serverdata>
           <mappings>
@@ -12,14 +26,7 @@
       <paths name="sorting machine">
         <serverdata>
           <mappings>
-            <mapping deploy="/home/pi/sorting_machine_fabric" local="$PROJECT_DIR$/sorting machine" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="sp13">
-        <serverdata>
-          <mappings>
-            <mapping deploy="/swarmrobot_fabric" local="$PROJECT_DIR$/swarmrobot" web="/" />
+            <mapping deploy="/home/pi/sorting_machine_fabric" local="$PROJECT_DIR$/sorting_machine" />
           </mappings>
         </serverdata>
       </paths>

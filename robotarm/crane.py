@@ -7,6 +7,7 @@ import threading
 
 # Import third-party libraries
 import brickpi3
+
 # Needed here for constant definitions
 brick_pi = brickpi3.BrickPi3()
 
@@ -168,7 +169,7 @@ def run_load():
     time.sleep(0.05)  # Let motor break
 
     # Start truck
-    mqtt_client.publish(MQTT_TOPIC_PUBLISH, MQTT_MESSAGE_PUBLISH, 1)
+    # mqtt_client.publish(MQTT_TOPIC_PUBLISH, MQTT_MESSAGE_PUBLISH, 1)
     time.sleep(2)
 
     # Turn rotation axis
@@ -187,6 +188,20 @@ def run_load():
 
     print("Loading of truck finished")
     currently_running = False
+
+
+def moveARMup():
+    while read_sensor(SENSOR_HORIZONTAL_AXIS) == 0:
+        brick_pi.set_motor_power(MOTOR_HORIZONTAL_AXIS, -80)
+        time.sleep(0.02)  # Reduce CPU load
+    brick_pi.set_motor_power(MOTOR_HORIZONTAL_AXIS, 0)
+    time.sleep(1)  # Let motor break
+
+
+def moveARMdown():
+    # Drive down horizontal axis
+    brick_pi.set_motor_position_relative(MOTOR_HORIZONTAL_AXIS, 750)
+    time.sleep(2)  # Let motor break
 
 
 def run_unload():
@@ -232,7 +247,7 @@ def run_unload():
     time.sleep(1)  # Let motor break
 
     # Start truck and wait for space
-    mqtt_client.publish(MQTT_TOPIC_PUBLISH, MQTT_MESSAGE_PUBLISH, 1)
+    # mqtt_client.publish(MQTT_TOPIC_PUBLISH, MQTT_MESSAGE_PUBLISH, 1)
     time.sleep(2)  # Let truck drive
 
     # Turn rotation axis
@@ -271,6 +286,57 @@ def run_unload():
     print("Unloading of truck finished")
     currently_running = False
 
+def pickupPallet():
+    # Drive down horizontal axis
+    brick_pi.set_motor_position_relative(MOTOR_HORIZONTAL_AXIS, 1560)
+
+    # Drive down vertical axis
+    brick_pi.set_motor_position_relative(MOTOR_VERTICAL_AXIS, -700)
+    time.sleep(5)  # Let motor run
+
+    # Close gripper
+    brick_pi.set_motor_position_relative(MOTOR_GRIPPER, -12000)
+    time.sleep(9)  # Let motor run
+
+    # Drive up horizontal axis
+    brick_pi.set_motor_position_relative(MOTOR_HORIZONTAL_AXIS, -1590)
+
+    # Reset vertical axis
+    while read_sensor(SENSOR_VERTICAL_AXIS) == 0:
+        brick_pi.set_motor_power(MOTOR_VERTICAL_AXIS, 30)
+        time.sleep(0.02)  # Reduce CPU load
+    brick_pi.set_motor_power(MOTOR_VERTICAL_AXIS, 0)
+    time.sleep(1)  # Let motor break
+
+def putdownPallet():
+    # Drive down horizontal axis
+    brick_pi.set_motor_position_relative(MOTOR_HORIZONTAL_AXIS, 1560)
+
+    # Drive down vertical axis
+    brick_pi.set_motor_position_relative(MOTOR_VERTICAL_AXIS, -700)
+    time.sleep(5)  # Let motor run
+
+    # Open gripper
+    brick_pi.set_motor_position_relative(MOTOR_GRIPPER, 12000)
+    time.sleep(8)  # Let motor run
+
+    # Reset vertical axis
+    while read_sensor(SENSOR_VERTICAL_AXIS) == 0:
+        brick_pi.set_motor_power(MOTOR_VERTICAL_AXIS, 30)
+        time.sleep(0.02)  # Reduce CPU load
+    brick_pi.set_motor_power(MOTOR_VERTICAL_AXIS, 0)
+    time.sleep(1)  # Let motor break
+
+    # Reset horizontal axis
+    while read_sensor(SENSOR_HORIZONTAL_AXIS) == 0:
+        brick_pi.set_motor_power(MOTOR_HORIZONTAL_AXIS, -80)
+        time.sleep(0.02)  # Reduce CPU load
+    brick_pi.set_motor_power(MOTOR_HORIZONTAL_AXIS, 0)
+    time.sleep(1)  # Let motor break
+
+    # Drive down horizontal axis
+    brick_pi.set_motor_position_relative(MOTOR_HORIZONTAL_AXIS, 750)
+    time.sleep(2)  # Let motor break
 
 # Protection to avoid running multiple times
 currently_running = True

@@ -3,6 +3,7 @@ import threading
 import time
 
 import numpy as np
+from setuptools.msvc import winreg
 
 from .bot import Bot
 from .enum_storageContainerPosition import StorageContainerPosition
@@ -17,6 +18,8 @@ class AutonomousBot(Bot):
 
     def __init__(self):
         super().__init__()
+        self._speed_max = 33
+        self.stop_all()
         self.calibrate()
 
         # Global variable for storing last image from camera thread
@@ -27,7 +30,7 @@ class AutonomousBot(Bot):
         # Order of sonic sensors: [LEFT, LEFT45, LEFT_FRONT, RIGHT_FRONT, RIGHT45, RIGHT]
         self._sonic_data = [None, None, None, None, None, None]
         # Global variable for frontward speed of rorbot (adjust carefully since the image-processing-power is limited)
-        self._speed = 25
+        self._speed = 27
         # Global flag for line detection
         self._status_line_detected = False
         # Global flag for parking slot detection
@@ -86,7 +89,8 @@ class AutonomousBot(Bot):
             last_detected_time_difference = int(
                 round(time.time() * 1000)) - last_detected_time
 
-            # If line coordinates are detected.
+            # If line coordinate
+            # s are detected.
             if coords != None and not self._pause_line_detection:
                 last_detected_time = int(round(time.time() * 1000))
                 self._status_line_detected = True
@@ -185,8 +189,9 @@ class AutonomousBot(Bot):
 
             # Calculate the median from each buffer list and saves them in class attribute
             self._sonic_data = [np.nanmedian(buffer_left), None, np.nanmedian(
-                buffer_left_front), np.nanmedian(buffer_right_front), np.nanmedian(buffer_right_45), np.nanmedian(buffer_right)]
-            print(self._sonic_data)
+                buffer_left_front), np.nanmedian(buffer_right_front), np.nanmedian(buffer_right_45),
+                                np.nanmedian(buffer_right)]
+        print(self._sonic_data)
 
     def start_stop_sign_detection(self):
         """
@@ -307,7 +312,9 @@ class AutonomousBot(Bot):
                 self._status_stop_sign_detected = False
 
             # Right of way and storage container handling (Checking Sonic.LEFT_FRONT, Sonic.RIGHT_FRONT, Sonic.RIGHT45)
-            elif (self._sonic_data[2] < 30 if self._sonic_data[2] != None else False) or (self._sonic_data[3] < 30 if self._sonic_data[3] != None else False) or (self._sonic_data[4] < 50 if self._sonic_data[4] != None else False):
+            elif (self._sonic_data[2] < 30 if self._sonic_data[2] != None else False) or (
+                    self._sonic_data[3] < 30 if self._sonic_data[3] != None else False) or (
+                    self._sonic_data[4] < 50 if self._sonic_data[4] != None else False):
                 while True:
                     # Stop the forward driving and pause line detection
                     self._pause_line_detection = True
@@ -316,12 +323,15 @@ class AutonomousBot(Bot):
                     self._drive_motor.change_power(0)
 
                     # If no storage container and objekt from RIGHT45-sensor is detected, start right of way handling
-                    if not self._status_storage_container_detected and (self._sonic_data[4] < 50 if self._sonic_data[4] != None else True):
+                    if not self._status_storage_container_detected and (
+                            self._sonic_data[4] < 50 if self._sonic_data[4] != None else True):
                         logging.info(
                             "AutonomousBot:StopSignDetection : successfully stopped for right of way order")
 
                         # Wait until way is free
-                        while (self._sonic_data[2] < 30 if self._sonic_data[2] != None else False) or (self._sonic_data[3] < 30 if self._sonic_data[3] != None else False) or (self._sonic_data[4] < 40 if self._sonic_data[4] != None else False):
+                        while (self._sonic_data[2] < 30 if self._sonic_data[2] != None else False) or (
+                                self._sonic_data[3] < 30 if self._sonic_data[3] != None else False) or (
+                                self._sonic_data[4] < 40 if self._sonic_data[4] != None else False):
                             time.sleep(1)
 
                         # Continue driving
@@ -342,7 +352,8 @@ class AutonomousBot(Bot):
                         # Pick up storage container
                         self._drive_motor.change_power(0)
                         self._forklift._height_motor.change_position(
-                            self._forklift._height_motor.position_from_factor(StorageContainerPosition.WhiteBox.value + 0.2))
+                            self._forklift._height_motor.position_from_factor(
+                                StorageContainerPosition.WhiteBox.value + 0.2))
                         self._forklift._rotate_motor.change_position(
                             self._forklift._rotate_motor._pmax)
                         # Wait for motors to pick up storage container
@@ -368,66 +379,26 @@ class AutonomousBot(Bot):
                     "AutonomousBot:ParkingSlotDetection : successfully parked in parking slot")
                 self._stop = True
 
-
-
-    def startSwarmLab(self):
-        """
-        Start all detecting functions in different threads.
-        """
+    def setup(self):
         self._stop = False
+
         self.start_detection_thread(self.start_sonar_detection)
         # Time to boot the ultrasonic sensors and to take first measurements
         time.sleep(1)
-       # self.start_detection_thread(self.print_sensors)
-        #self.start_detection_thread(self.start_line_detection)
-        #self.start_detection_thread(self.start_parking_slot_detection)
-        self.start_detection_thread(self.start_stop_sign_detection)
-       # self.start_detection_thread(self.start_storage_container_detection)
-        self.moveAlongLine()
-        time.sleep(5)
-        #al
-        self.anlignobstacle()
-        self.handleWarehouse()
 
+    def moveToWarehouse(self, startingpos=1):
+        if (startingpos == 2):
+            self.setMoving(secs=1, power=30)
+            self.steer(-0.9)
+            self.setMoving(secs=5, power=self._speed)
+            self.steer(0)
+            self.setMoving(secs=1, power=self._speed)
+            self.steer(0.5)
+            self._drive_motor.change_power(self._speed)
+            time.sleep(6)
 
-        exit()
-
-        while not self._stop:
-            # Stop sign handling
-            if self._status_stop_sign_detected:
-              self.handleStopSign()
-
-            # Right of way and storage container handling (Checking Sonic.LEFT_FRONT, Sonic.RIGHT_FRONT, Sonic.RIGHT45)
-            elif (self._sonic_data[2] < 30 if self._sonic_data[2] != None else False) or (self._sonic_data[3] < 30 if self._sonic_data[3] != None else False) or (self._sonic_data[4] < 50 if self._sonic_data[4] != None else False):
-                while True:
-                    # Stop the forward driving and pause line detection
-                    self._pause_line_detection = True
-                    temp_speed = self._speed
-                    self._speed = 0
-                    self._drive_motor.change_power(0)
-
-                    # If no storage container and objekt from RIGHT45-sensor is detected, start right of way handling
-                    if not self._status_storage_container_detected and (self._sonic_data[4] < 50 if self._sonic_data[4] != None else True):
-                        logging.info(
-                            "AutonomousBot:StopSignDetection : successfully stopped for right of way order")
-
-                        # Wait until way is free
-                        while (self._sonic_data[2] < 30 if self._sonic_data[2] != None else False) or (self._sonic_data[3] < 30 if self._sonic_data[3] != None else False) or (self._sonic_data[4] < 40 if self._sonic_data[4] != None else False):
-                            time.sleep(1)
-
-                        # Continue driving
-                        self._speed = temp_speed
-                        self._pause_line_detection = False
-
-                    # Is storage container is detected, start handling
-                    elif self._status_storage_container_detected:
-                        self.pickup_storage_container()
-
-
-            # Parking slot handling
-            elif not self._status_line_detected and self._status_parking_slot_detected:
-                self.park_in_parking_slot()
-
+        self.moveAlongLine(widthToObstacle=35, rightbeforeleft=True)
+        time.sleep(1)
 
     def park_in_parking_slot(self):
         self._steer_motor.change_position(
@@ -482,26 +453,42 @@ class AutonomousBot(Bot):
         self._speed = temp_speed
         self._status_stop_sign_detected = False
 
-    #until no line ist there
-    def moveAlongLine(self):
-        """
-              Detect line in image from class attribute [_current_image].
-              """
-        last_detected_time = 0
 
+    # until no line ist there
+    def moveAlongLine(self, obstacledetection=True, widthToObstacle=55,rightbeforeleft=False):
+        linefound = False
+        print("Moving along line")
+        last_detected_time = 0
         while not self._stop:
+            time.sleep(0.1)
             lt = LineTracking()
             coords, _ = lt.track_line(self._current_image.copy())
             last_detected_time_difference = int(
                 round(time.time() * 1000)) - last_detected_time
-            #break iftheres a obstacle
-            if (self._sonic_data[2] < 30 if self._sonic_data[2] != None else False) or (self._sonic_data[3] < 30 if self._sonic_data[3] != None else False):
+
+            if rightbeforeleft and  self._sonic_data[4] < 50 if self._sonic_data[4] != None else False:
+                self._drive_motor.change_power(0)
+                self._steer_motor.change_position(
+                    self._steer_motor.position_from_factor(0))
+                time.sleep(1)
+                if self._sonic_data[4] < 50 if self._sonic_data[4] != None else False:
+                    time.sleep(10)
+
+            # break iftheres a obstacle
+            if obstacledetection and (
+                    (self._sonic_data[2] < widthToObstacle if self._sonic_data[2] != None else False) or (
+                    self._sonic_data[3] < widthToObstacle if self._sonic_data[3] != None else False)):
                 self._drive_motor.change_power(0)
                 self._steer_motor.change_position(
                     self._steer_motor.position_from_factor(0))
                 time.sleep(2)
-                if (self._sonic_data[2] < 30 if self._sonic_data[2] != None else False) or (self._sonic_data[3] < 30 if self._sonic_data[3] != None else False):
-                    logging.info("obstacle detectet")
+                if (self._sonic_data[2] < widthToObstacle if self._sonic_data[2] != None else False) or (
+                        self._sonic_data[3] < widthToObstacle if self._sonic_data[3] != None else False):
+                    print("obstacle in font: "+str(self._sonic_data[2])+" "+str(self._sonic_data[3]))
+                    self._steer_motor.change_position(
+                        self._steer_motor.position_from_factor(0))
+                    self._drive_motor.change_power(0)
+
                     return
                 else:
                     self._drive_motor.change_power(self._speed)
@@ -510,8 +497,10 @@ class AutonomousBot(Bot):
             if coords != None and not self._pause_line_detection:
                 last_detected_time = int(round(time.time() * 1000))
                 self._status_line_detected = True
+                if linefound==False:
+                    print("Line found")
+                linefound=True
                 delta = -160 + coords[2]
-
                 # If delta out of tolerance, steer right
                 if (delta > 10):
                     self._drive_motor.change_power(self._speed)
@@ -532,46 +521,291 @@ class AutonomousBot(Bot):
 
             # If no line is detected stop driving
             elif not self._pause_line_detection:
+                #if there is no line found, continue driving
+                if linefound==False:
+                    continue
+                #if there was a line and it ended , do the next step
                 self._drive_motor.change_power(0)
                 self._steer_motor.change_position(
                     self._steer_motor.position_from_factor(0))
-                self._status_line_detected = False
-                logging.info(
-                    "no line detected")
+                print("no line")
                 return
 
     def handleWarehouse(self):
-        self._forklift.to_pickup_mode()
-        self._forklift.set_custom_height(11)
-       # self._drive_motor.change_power(self._speed)
-        time.sleep(5)
-        #self._drive_motor.change_power(0)
-        self._forklift.to_carry_mode()
-       # self.pickup_storage_container(StorageContainerPosition.HorizontalWarehouse)
-
-    def anlignobstacle(self):
-        print(abs(self._sonic_data[2] - self._sonic_data[3])>1)
-        while abs(self._sonic_data[2] - self._sonic_data[3])>1:
-            print(abs(self._sonic_data[2] - self._sonic_data[3]) > 1)
-            if(self._sonic_data[2]>self._sonic_data[3]):
-                self._drive_motor.change_power(self._speed/2)
+        self.steer(0.0)
+        self.setMoving(0, 1)
+        while self._sonic_data[2] > 22 or self._sonic_data[3] > 22:
+            print(self._sonic_data[2] - self._sonic_data[3])
+            if 1 > abs(self._sonic_data[2] - self._sonic_data[3]):
+                self._drive_motor.change_power(21)
                 self._steer_motor.change_position(
-                    self._steer_motor.position_from_factor(0.5))
-                print("steer right ")
-
+                    self._steer_motor.position_from_factor(0))
+            elif self._sonic_data[2] > self._sonic_data[3]:
+                self._steer_motor.change_position(
+                    self._steer_motor.position_from_factor(0.2))
+                self._drive_motor.change_power(21)
             # Else if delta out of tolerance, steer left
             else:
-                self._drive_motor.change_power(self._speed/2)
                 self._steer_motor.change_position(
-                    self._steer_motor.position_from_factor(-0.5))
-                print("steer left ")
+                    self._steer_motor.position_from_factor(-0.2))
+                self._drive_motor.change_power(21)
+            time.sleep(0.2)
+        self.setMoving(0,1)
+        self._forklift.to_pickup_mode()
+        self._forklift.set_custom_height(9.7)
+        time.sleep(4)
+        #here
+        self.steer(0.0)
+        time.sleep(1)
+        self._drive_motor.change_power(self._speed_max)
+        time.sleep(2)
+        self._drive_motor.change_power(0)
+        self._forklift.set_custom_height(12)
+        time.sleep(2)
+        self._drive_motor.change_power(-22)
+        time.sleep(3)
+        self._drive_motor.change_power(0)
+        self._forklift.to_carry_mode()
+
+
+    def anlignobstacle(self):
+        while 2 < abs(self._sonic_data[2] - self._sonic_data[3]) < 10:
+            if self._sonic_data[2] < self._sonic_data[3]:
+                self._drive_motor.change_power(-20)
+                self._steer_motor.change_position(
+                    self._steer_motor.position_from_factor(0.7))
+            # Else if delta out of tolerance, steer left
+            else:
+                self._drive_motor.change_power(-20)
+                self._steer_motor.change_position(
+                    self._steer_motor.position_from_factor(-0.7))
+
         self._drive_motor.change_power(0)
         self._steer_motor.change_position(
             self._steer_motor.position_from_factor(0))
         return
 
+    def moveToSortingFactory(self):
+        self._steer_motor.change_position(
+            self._steer_motor.position_from_factor(0.8))
+        self._drive_motor.change_power(-self._speed)
+        time.sleep(3.5)
+        self._drive_motor.change_power(0)
+        self._steer_motor.change_position(
+            self._steer_motor.position_from_factor(0))
+        time.sleep(1.5)
+        self._steer_motor.change_position(
+            self._steer_motor.position_from_factor(-0.35))
+        self._drive_motor.change_power(self._speed)
+        time.sleep(2.5)
+        self._drive_motor.change_power(0)
+        #stap
+        time.sleep(3)
+        self._drive_motor.change_power(self._speed)
+        time.sleep(3)
+        self.steer(0)
+        self.setMoving(1.5,secs=1)
+
+        self.moveAlongLine(widthToObstacle=45)
+
+    def unload_sorting_Factory(self):
+        self._forklift.set_custom_height(9)
+        self._drive_motor.change_power(self._speed)
+        time.sleep(5)
+        self._drive_motor.change_power(0)
+        self._forklift.set_custom_height(5)
+        time.sleep(3)
+        self._drive_motor.change_power(-self._speed_max)
+        time.sleep(3)
+        self._drive_motor.change_power(0)
+
+    def moveToSortingOutput(self):
+        self._steer_motor.change_position(
+            self._steer_motor.position_from_factor(0.8))
+        self._drive_motor.change_power(-self._speed)
+        time.sleep(3)
+        self._drive_motor.change_power(0)
+        self._steer_motor.change_position(
+            self._steer_motor.position_from_factor(0))
+
+        time.sleep(1)
+        self._drive_motor.change_power(-self._speed)
+        time.sleep(0.5)
+        self._drive_motor.change_power(0)
+        time.sleep(1)
+        self._steer_motor.change_position(
+            self._steer_motor.position_from_factor(-0.8))
+        self._drive_motor.change_power(-self._speed)
+        time.sleep(3)
+        self._steer_motor.change_position(
+            self._steer_motor.position_from_factor(0))
+        self._drive_motor.change_power(0)
+        self.moveAlongLine(widthToObstacle=45)
+
+    def move_toRobotarm(self):
+        self._forklift.to_carry_mode()
+        self._steer_motor.change_position(
+            self._steer_motor.position_from_factor(0.8))
+        self._drive_motor.change_power(-self._speed)
+        time.sleep(2)
+        self._drive_motor.change_power(0)
+
+        time.sleep(1)
+        self._steer_motor.change_position(
+            self._steer_motor.position_from_factor(-0.8))
+        self._drive_motor.change_power(self._speed)
+        time.sleep(5.5)
+        self.setMoving(power=0,secs=2)
 
 
+
+    def unload_Robotarm(self):
+        self.moveAlongLine(widthToObstacle=45)
+        self._steer_motor.change_position(
+            self._steer_motor.position_from_factor(0))
+        time.sleep(1)
+        self.moveStraightUntilObstacle(widthToObstacle=38, activateLeft=False,speed=22)
+        self._drive_motor.change_power(0)
+        self._forklift.set_custom_height(0)
+        time.sleep(7)
+        self._drive_motor.change_power(-self._speed)
+        time.sleep(2)
+        self._drive_motor.change_power(0)
+
+    def pickup_pallet_from_robotarm(self):
+        self.steer(-0.1)
+        self._drive_motor.change_power(self._speed)
+        time.sleep(2.5)
+        self._drive_motor.change_power(0)
+        self._forklift.to_carry_mode()
+        time.sleep(5)
+        self._drive_motor.change_power(-self._speed)
+        time.sleep(3)
+        self._drive_motor.change_power(0)
+
+    def pickup_Pallet_from_SortingMachine(self):
+        self._forklift.set_custom_height(0)
+        time.sleep(2.5)
+        self._drive_motor.change_power(self._speed)
+        time.sleep(0.5)
+
+        self._drive_motor.change_power(self._speed)
+        time.sleep(3)
+        self._drive_motor.change_power(0)
+        self._forklift.to_carry_mode()
+        time.sleep(4)
+        self._drive_motor.change_power(-self._speed)
+        time.sleep(1)
+        self._drive_motor.change_power(0)
+
+
+    def moveStraightUntilObstacle(self, widthToObstacle=50.0, activateLeft=True, activateRight=True,speed=25):
+        self._steer_motor.change_position(
+            self._steer_motor.position_from_factor(0))
+        while ((self._sonic_data[2] > widthToObstacle if self._sonic_data[2] != None else False) and activateLeft) or (
+                (self._sonic_data[3] > widthToObstacle if self._sonic_data[3] != None else False) and activateRight):
+            time.sleep(0.1)
+            print(self._sonic_data)
+            if ((self._sonic_data[2] < widthToObstacle if self._sonic_data[2] != None else False) and activateLeft) or (
+                    (self._sonic_data[3] < widthToObstacle if self._sonic_data[3] != None else False) and activateLeft):
+                logging.info("obstacle detectet")
+                self._steer_motor.change_position(
+                    self._steer_motor.position_from_factor(0))
+                self._drive_motor.change_power(0)
+                return
+            else:
+                self._drive_motor.change_power(speed)
+        logging.info("obstacle detectet")
+        self._drive_motor.change_power(0)
+
+    def moveFromArmAway(self):
+        self._steer_motor.change_position(
+            self._steer_motor.position_from_factor(0.8))
+        self._drive_motor.change_power(-self._speed)
+        time.sleep(4)
+        self._drive_motor.change_power(0)
+        self._steer_motor.change_position(
+            self._steer_motor.position_from_factor(0))
+        time.sleep(1)
+        self._drive_motor.change_power(self._speed)
+        time.sleep(3)
+        self.moveAlongLine(obstacledetection=False)
+
+    def deliverPalletatwarehouse(self):
+        self.steer(-0.2)
+        self._drive_motor.change_power(25)
+        time.sleep(4)
+        self.moveAlongLine()
+        self.steer(0.8)
+        self._drive_motor.change_power(-self._speed)
+        time.sleep(5)
+        self.moveAlongLine(widthToObstacle=45)
+
+    def stop_moving(self):
+        self._drive_motor.change_power(0)
+        self._steer_motor.change_position(
+            self._steer_motor.position_from_factor(0))
+        time.sleep(1)
+
+    def unload_at_warehouse(self):
+        self._forklift.set_custom_height(12)
+        time.sleep(5)
+        # self._forklift.to_pickup_mode()
+        while self._sonic_data[2] > 20 or self._sonic_data[3] > 20:
+            print(self._sonic_data[2] - self._sonic_data[3])
+            if 1 > abs(self._sonic_data[2] - self._sonic_data[3]):
+                self._drive_motor.change_power(23)
+                self._steer_motor.change_position(
+                    self._steer_motor.position_from_factor(0))
+            elif self._sonic_data[2] > self._sonic_data[3]:
+                self._steer_motor.change_position(
+                    self._steer_motor.position_from_factor(0.2))
+                self._drive_motor.change_power(23)
+            # Else if delta out of tolerance, steer left
+            else:
+                self._steer_motor.change_position(
+                    self._steer_motor.position_from_factor(-0.2))
+                self._drive_motor.change_power(23)
+            time.sleep(0.4)
+        self._drive_motor.change_power(0)
+        self._steer_motor.change_position(
+            self._steer_motor.position_from_factor(0))
+        time.sleep(0.5)
+        self._drive_motor.change_power(self._speed_max)
+        time.sleep(3)
+        self._drive_motor.change_power(0)
+        self._forklift.set_custom_height(9.3)
+        time.sleep(2)
+        self._drive_motor.change_power(-23)
+        time.sleep(3)
+        self._drive_motor.change_power(0)
+        self._forklift.to_carry_mode()
+
+    def setMoving(self, power, secs=2.0):
+        print("started")
+        self._drive_motor.change_power(power)
+        time.sleep(secs)
+        self._drive_motor.change_power(0)
+        print("stopped")
+
+    def move_to_Parkingspot(self):
+        self.steer(0.8)
+        self.setMoving(power=-self._speed, secs=5.6)
+        self.steer(-0.8)
+        self.setMoving(secs=2, power=self._speed)
+        self.steer(0)
+        self.setMoving(secs=3, power=self._speed)
+        self.steer(-0.8)
+        self._drive_motor.change_power(self._speed)
+        time.sleep(4.5)
+        self.moveAlongLine(obstacledetection=False)
+        time.sleep(2)
+        self.steer(-0.8)
+        self.setMoving(secs=12, power=self._speed)
+        self.steer(0.5)
+        self.setMoving(secs=3, power=-self._speed)
+        self.steer(-0.3)
+        self.setMoving(secs=3, power=self._speed)
 
 
 if __name__ == '__main__':

@@ -4,7 +4,8 @@ from botlib.bot import Bot
 
 
 def main():
-    Bot().calibrate()
+    bot=Bot()
+    bot.calibrate()
 
 
 if __name__ == '__main__':
