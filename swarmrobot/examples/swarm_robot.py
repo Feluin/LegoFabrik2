@@ -1,12 +1,12 @@
 import logging
 import time
 
-from botlib.autonomousBot import AutonomousBot
+from botlib.autonomousBot import SwarmLabBot
 
 
 def main():
     # cv2.VideoCapture(0)
-    with AutonomousBot() as bot:
+    with SwarmLabBot() as bot:
         bot._drive_motor.change_power(0)
         bot.steer(-0.8)
         time.sleep(1)

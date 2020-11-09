@@ -1,10 +1,10 @@
 import logging
 
-from botlib.autonomousBot import AutonomousBot
+from botlib.autonomousBot import SwarmLabBot
 
 
 def main():
-    with AutonomousBot() as bot:
+    with SwarmLabBot() as bot:
         bot.start()
 
 if __name__ == '__main__':

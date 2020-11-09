@@ -2,15 +2,15 @@ import time
 
 import paho.mqtt.client as client
 import examples.notifier as notifier
-from botlib.autonomousBot import AutonomousBot
+from botlib.swarmlabbot import SwarmLabBot
 
 # setup swarmrobot
-bot = AutonomousBot()
+bot = SwarmLabBot()
 bot.setup()
 mqttnotifier = notifier.Notifier()
 startingpos = 1
 
-
+"""Handle the POC simulation"""
 def onMessage(client, userdata, msg):
     print("Message Topic: " + msg.topic + " Payload: " + msg.payload.decode('UTF-8'))
     if msg.topic == "/warehouse/order":
@@ -50,6 +50,7 @@ def onMessage(client, userdata, msg):
         bot.pickup_pallet_from_robotarm()
         mqttnotifier.notifiy_robotarm_picked_up()
         bot.moveFromArmAway()
+        #uncomment if the warehouse ist implemented
         #client.subscribe("/warehouse/status")
         # time.sleep(1)
         #remove if warehouse is implemented
@@ -66,7 +67,6 @@ def onMessage(client, userdata, msg):
     else:
         pass
 
-
 def onConnect(client, userdata, flags, rc):
     client.subscribe("/warehouse/order")
 
@@ -80,8 +80,3 @@ client.on_connect = onConnect
 client.on_message = onMessage
 client.connect(hostname, port)
 client.subscribe("/warehouse/order")
-# mqttnotifier.notifiy_warehouse_incoming()
-
-# client.subscribe("/robotarm/status")
-# bot.move_toRobotarm()
-# mqttnotifier.alert_robotarm()

@@ -107,6 +107,7 @@ class Bot:
 
     # -1 =left 1= right
     def steer(self, posfactor):
+        """ """
         diff = self._steer_motor.currentpos - posfactor
         if (diff > 0):
             self._steer_motor.change_position(
@@ -117,3 +118,16 @@ class Bot:
         time.sleep(1)
         self._steer_motor.change_position(
             self._steer_motor.position_from_factor(posfactor))
+
+    def stop_moving(self):
+        self._drive_motor.change_power(0)
+        self._steer_motor.change_position(
+            self._steer_motor.position_from_factor(0))
+        time.sleep(1)
+
+    def setMoving(self, power, secs=2.0):
+        print("started")
+        self._drive_motor.change_power(power)
+        time.sleep(secs)
+        self._drive_motor.change_power(0)
+        print("stopped")
